@@ -1,65 +1,75 @@
-# Expense Tracker
+# Personal Expense Tracker with Automated Deployment
 
-A Flask-based web application for recording, managing, filtering,
-visualizing, and exporting personal expenses. The application uses
-SQLite for persistent storage, Flask-SQLAlchemy for database operations,
-Jinja2 templates for server-side rendering, Tailwind CSS for the
-interface, and Chart.js for spending visualizations.
+## 1. Project Overview
 
-## Features
+The Personal Expense Tracker is a Flask-based web application designed to help users record, manage, and analyze their personal expenses through a web interface.
 
--   Add expenses with:
-    -   Description
-    -   Amount
-    -   Category
-    -   Date
--   Store expenses in a SQLite database.
--   View all stored expenses in a table.
--   Delete individual expenses.
--   Filter expenses by:
-    -   Start date
-    -   End date
-    -   Category
--   Validate expense input:
-    -   Required description, amount, and category
-    -   Amount must be a positive number
-    -   Date must follow `YYYY-MM-DD`
-    -   Invalid date ranges are rejected
--   Calculate the total amount for the currently filtered expenses.
--   Export the currently filtered expenses as a CSV file.
--   Visualize spending:
-    -   Expenses by category using a pie chart
-    -   Daily spending over time using a bar chart
--   Display success and error messages using Flask flash messages.
--   Responsive dark-themed dashboard interface.
+This project extends an existing Expense Tracker application by incorporating DevOps practices, including version control, Docker containerization, automated testing, Continuous Integration (CI), and cloud deployment.
 
-## Tech Stack
+The application is hosted on Render, while GitHub Actions automates the testing and Docker image build process whenever changes are pushed to the repository.
 
-### Backend
+## 2. Objectives
 
--   Python
--   Flask
--   Flask-SQLAlchemy
--   SQLAlchemy
--   SQLite
+The primary objectives of this project are:
 
-### Frontend
+- To run a web-based application for personal expense management.
+- To maintain source code using Git and GitHub.
+- To containerize the application using Docker.
+- To automate application testing using pytest.
+- To implement a Continuous Integration pipeline using GitHub Actions.
+- To deploy the application to a cloud hosting platform.
+- To enable automatic deployment when changes are pushed to the main branch.
+- To understand the workflow from local development to cloud deployment.
 
--   HTML
--   Jinja2 templates
--   Tailwind CSS
--   JavaScript
--   Chart.js
+## 3. Features
 
-### Data Export
+### Application Features
 
--   Python `csv` module
--   CSV download through a Flask response
+- Record and manage personal expenses.
+- View expense records through a web interface.
+- Organize expenses using the application's supported categories.
+- Store expense records using SQLite.
+- Access expense-management functionality through Flask routes and HTML templates.
 
-## Project Structure
+### DevOps Features
 
-``` text
-Expense-tracker/
+- Version control using Git.
+- Source code management using GitHub.
+- Containerization using Docker.
+- Automated homepage testing using pytest.
+- Automated testing and Docker image building using GitHub Actions.
+- Cloud deployment using Render.
+- Automatic deployment following changes to the connected GitHub repository.
+
+## 4. Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Backend programming language |
+| Flask | Web application framework |
+| Flask-SQLAlchemy | Database integration |
+| SQLite | Database for expense records |
+| HTML and Jinja2 | Web interface and template rendering |
+| Git | Version control |
+| GitHub | Source code hosting |
+| Docker | Application containerization |
+| Gunicorn | WSGI server for running the Flask application |
+| pytest | Automated testing |
+| GitHub Actions | Continuous Integration |
+| Render | Cloud hosting and automatic deployment |
+
+## 5. Project Structure
+
+```text
+Personal-Expense-Tracker-DevOps/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── .pytest_cache/
+├── .venv/
+├── __pycache__/
 │
 ├── instance/
 │   └── expenses.db
@@ -68,677 +78,283 @@ Expense-tracker/
 │   ├── base.html
 │   └── index.html
 │
-├── app.py
-├── requirements.txt
+├── .dockerignore
 ├── .gitignore
-└── venv/
+├── app.py
+├── Dockerfile
+├── README.md
+├── requirements.txt
+└── test_app.py
 ```
 
-> `venv/` is the local Python virtual environment and should not be
-> committed to GitHub. `requirements.txt` records the Python
-> dependencies needed to recreate the environment.
+**File and directory descriptions**
 
-## Application Architecture
+- `app.py` — Contains the Flask application, routes, and database-related operations.
+- `templates/` — Contains the HTML templates used to render the application interface.
+- `base.html` — Defines the common page layout.
+- `index.html` — Defines the main application page.
+- `instance/expenses.db` — Local SQLite database file.
+- `requirements.txt` — Lists the Python packages required by the application.
+- `Dockerfile` — Defines the instructions for building the Docker image.
+- `.dockerignore` — Excludes unnecessary files from the Docker build context.
+- `.gitignore` — Excludes local environments, generated files, and database files from version control.
+- `test_app.py` — Contains the automated homepage smoke test.
+- `.github/workflows/ci.yml` — Defines the GitHub Actions CI workflow.
+- `.venv/` — Local Python virtual environment.
+- `__pycache__/` and `.pytest_cache/` — Generated Python and pytest cache directories.
 
-The application follows a simple Flask MVC-style flow:
+The virtual environment and cache directories are local development artifacts and should not be committed to the repository.
 
-``` text
-                ┌─────────────────────┐
-                │       Browser       │
-                │   HTML Dashboard    │
-                └──────────┬──────────┘
-                           │
-                    HTTP GET / POST
-                           │
-                           ▼
-                ┌─────────────────────┐
-                │      Flask App      │
-                │       app.py        │
-                └──────────┬──────────┘
-                           │
-            ┌──────────────┼──────────────┐
-            │              │              │
-            ▼              ▼              ▼
-       Validation      Database       Calculations
-            │              │              │
-            │              ▼              │
-            │       SQLite + ORM         │
-            │              │              │
-            └──────────────┼──────────────┘
-                           │
-                           ▼
-                ┌─────────────────────┐
-                │   Jinja2 Template   │
-                │     index.html      │
-                └──────────┬──────────┘
-                           │
-                           ▼
-                ┌─────────────────────┐
-                │   Dashboard Output  │
-                │ Table + Total +     │
-                │ Charts + Messages   │
-                └─────────────────────┘
+## 6. System Architecture
+
+```mermaid
+flowchart TD
+    A[Developer] --> B[Git Commit and Push]
+    B --> C[GitHub Repository]
+
+    C --> D[GitHub Actions CI]
+    D --> E[Install Dependencies]
+    E --> F[Run pytest]
+    F --> G[Build Docker Image]
+
+    C --> H[Render Auto-Deploy]
+    H --> I[Build Docker Image]
+    I --> J[Run Container]
+    J --> K[Gunicorn]
+    K --> L[Flask Application]
+    L --> M[SQLite Database]
+    L --> N[Web Interface]
 ```
 
-## Complete Application Workflow
+The architecture consists of two main workflows.
 
-### 1. Application Startup
+**Continuous Integration:** GitHub Actions checks out the repository, installs dependencies, runs automated tests, and builds the Docker image.
 
-When `app.py` starts:
+**Cloud Deployment:** Render detects changes in the connected repository, builds the application using the Dockerfile, and deploys the resulting container.
 
-1.  Flask creates the application.
-2.  SQLite is configured through SQLAlchemy.
-3.  A secret key is configured for Flask flash messages.
-4.  SQLAlchemy is initialized.
-5.  The `Expense` database model is defined.
-6.  `db.create_all()` creates the required database table if it does not
-    already exist.
-7.  The application starts in debug mode.
+GitHub Actions and Render operate independently: GitHub Actions performs CI, while Render handles cloud deployment.
 
-The database configuration uses SQLite through Flask-SQLAlchemy.
+## 7. Implementation
 
-## 2. Database Layer
+### 7.1 Version Control Using Git and GitHub
 
-The application defines an `Expense` model with four user-provided
-fields plus an automatically generated ID:
+The project is maintained in a dedicated GitHub repository:
 
-  Field           Type      Purpose
-  --------------- --------- ---------------------
-  `id`            Integer   Primary key
-  `description`   String    Expense description
-  `amount`        Float     Expense amount
-  `category`      String    Expense category
-  `date`          Date      Expense date
+https://github.com/GreeshmaReddy427/Personal-Expense-Tracker-DevOps
 
-The currently supported categories are:
+Git is used to track changes, create commits, and maintain the project history. GitHub provides centralized source code storage and integration with the CI and deployment services.
 
-``` text
-Food
-Utility
-Health
-Rent
-Bills
+### 7.2 Docker Containerization
+
+A Dockerfile was created using the `python:3.11-slim` base image.
+
+The Docker build process:
+
+1. Sets the working directory to `/app`.
+2. Copies `requirements.txt` and installs the application dependencies.
+3. Installs Gunicorn.
+4. Copies `app.py` and the `templates/` directory into the image.
+5. Creates the application instance directory.
+6. Starts the Flask application through Gunicorn.
+
+The container listens on the port provided by the hosting environment, with port `5000` used as the default for local execution.
+
+Docker allows the application and its runtime dependencies to be packaged into a consistent execution environment.
+
+### 7.3 Automated Testing Using pytest
+
+The project includes a smoke test in `test_app.py`.
+
+The test sends a request to the application's homepage and verifies that the response status code is `200 OK`.
+
+Run the test locally using:
+
+```bash
+python -m pytest -v
 ```
 
-SQLAlchemy is used as the ORM, so the application works with Python
-objects rather than writing raw SQL for normal CRUD operations.
+This test checks basic homepage availability. It does not provide complete coverage of all expense-management operations.
 
-## 3. Home Page Workflow
+### 7.4 Continuous Integration Using GitHub Actions
 
-The main dashboard is available at:
+The workflow configuration is stored at:
 
-``` text
-GET /
+```text
+.github/workflows/ci.yml
 ```
 
-When the user opens the dashboard:
+The workflow runs on:
 
-1.  Flask reads optional filter values from the URL.
-2.  Start date, end date, and category are extracted.
-3.  Date strings are converted into Python `date` objects.
-4.  The date range is validated.
-5.  A database query is created.
-6.  Date filters are applied when provided.
-7.  Category filtering is applied when provided.
-8.  Matching expenses are retrieved.
-9.  Expenses are ordered by date descending and then ID descending.
-10. The total expense amount is calculated.
-11. Daily spending data is grouped by date.
-12. Category spending data is grouped by category.
-13. All calculated data is passed to `index.html`.
-14. Jinja2 renders the dashboard.
+- Pushes to the `main` branch.
+- Pull requests targeting the `main` branch.
 
-## 4. Adding an Expense
+The CI pipeline performs the following steps:
 
-The Add Expense form sends a POST request to:
+1. Checks out the repository.
+2. Sets up Python 3.11.
+3. Installs the application dependencies, pytest, and Gunicorn.
+4. Runs the automated tests.
+5. Builds the Docker image.
 
-``` text
-POST /add
-```
+Successful workflow runs confirm that the configured test and image-build steps completed successfully.
 
-The workflow is:
+### 7.5 Cloud Deployment Using Render
 
-``` text
-User enters expense
-       │
-       ▼
-HTML form submits POST
-       │
-       ▼
-Flask reads form data
-       │
-       ▼
-Validate description,
-amount and category
-       │
-       ▼
-Validate amount
-       │
-       ▼
-Validate/parse date
-       │
-       ▼
-Create Expense object
-       │
-       ▼
-db.session.add()
-       │
-       ▼
-db.session.commit()
-       │
-       ▼
-Flash "Expense added"
-       │
-       ▼
-Redirect to dashboard
-```
+The application is deployed on Render as a Docker-based web service.
 
-### Input Validation
+Deployment configuration:
 
-The backend checks that:
+| Setting | Value |
+|---|---|
+| Source repository | `GreeshmaReddy427/Personal-Expense-Tracker-DevOps` |
+| Branch | `main` |
+| Runtime | Docker |
+| Region | Singapore |
+| Instance plan | Free |
 
--   Description is not empty.
--   Amount is not empty.
--   Category is not empty.
--   Amount can be converted to a number.
--   Amount is greater than zero.
--   Date follows the expected format.
+Render builds the application from the Dockerfile and runs the container using Gunicorn.
 
-If validation fails, a flash error message is displayed and the user is
-redirected back to the dashboard.
+Automatic deployment is enabled for the connected repository. When a new commit is pushed to `main`, Render detects the change and starts a new deployment.
 
-## 5. Filtering Expenses
+The successful deployment of the `Test automatic Render deployment` commit confirmed that Render detected a GitHub push and brought the new deployment live.
 
-The dashboard allows the user to filter expenses using:
+**Live Application:** [Personal Expense Tracker](https://personal-expense-tracker-devops.onrender.com/)
 
-``` text
-Start Date
-End Date
-Category
-```
-
-The filter values are sent as URL query parameters.
-
-Example:
-
-``` text
-/?start=2026-08-01&end=2026-08-22&category=Food
-```
-
-The backend dynamically builds the database query based on the filters.
-
-The same filtering logic is used for:
-
--   Expense table
--   Total expense calculation
--   Category chart
--   Daily spending chart
--   CSV export
-
-This keeps the dashboard consistent with the selected filter.
-
-## 6. Date Range Validation
-
-The application checks:
-
-``` text
-end_date < start_date
-```
-
-If the end date occurs before the start date:
-
-1.  A Flask error message is displayed.
-2.  The invalid dates are cleared.
-3.  The application falls back to the unfiltered date range.
-
-This prevents an invalid date range from being used in the expense
-query.
-
-## 7. Total Expense Calculation
-
-After retrieving the filtered expenses, the application calculates:
-
-``` text
-Total = sum of all filtered expense amounts
-```
-
-The result is rounded to two decimal places and displayed on the
-dashboard.
-
-For example:
-
-``` text
-Total: ₹1,250.50
-```
-
-The total therefore represents the currently selected filter rather than
-necessarily the total of every record in the database.
-
-## 8. Category Analysis
-
-The backend performs a database aggregation:
-
-``` text
-Category → SUM(amount)
-```
-
-For example:
-
-``` text
-Food      → ₹2,500
-Utility   → ₹1,200
-Health    → ₹800
-Rent      → ₹8,000
-Bills     → ₹1,500
-```
-
-These values are sent to the frontend as:
-
-``` text
-cat_labels
-cat_values
-```
-
-The frontend uses Chart.js to create a pie chart titled:
-
-``` text
-Expenses by Category
-```
-
-## 9. Daily Spending Analysis
-
-The backend groups expenses by date:
-
-``` text
-Date → SUM(amount)
-```
-
-The resulting values are sent to the frontend as:
-
-``` text
-day_labels
-day_values
-```
-
-Chart.js uses these values to generate a bar chart titled:
-
-``` text
-Spending Over Time
-```
-
-This allows the user to see how spending changes from day to day.
-
-## 10. Deleting an Expense
-
-The delete operation is handled by:
-
-``` text
-POST /delete/<expense_id>
-```
-
-Workflow:
-
-``` text
-User clicks Delete
-       │
-       ▼
-Browser asks for confirmation
-       │
-       ▼
-POST request sent
-       │
-       ▼
-Flask finds expense by ID
-       │
-       ▼
-Expense is deleted
-       │
-       ▼
-Database commit
-       │
-       ▼
-Success message
-       │
-       ▼
-Redirect to dashboard
-```
-
-The frontend includes a confirmation dialog before submitting the delete
-request.
-
-## 11. CSV Export
-
-The application provides:
-
-``` text
-GET /export_csv
-```
-
-The export follows the currently selected:
-
--   Start date
--   End date
--   Category
-
-The backend:
-
-1.  Reads the filter values.
-2.  Converts date values.
-3.  Builds the same filtered expense query.
-4.  Retrieves matching expenses.
-5.  Creates an in-memory CSV using `io.StringIO`.
-6.  Writes a header row.
-7.  Writes each expense as a CSV row.
-8.  Generates a filename based on the selected date range.
-9.  Returns the CSV as a downloadable HTTP response.
-
-CSV columns:
-
-``` text
-date
-description
-category
-amount
-```
-
-## 12. Frontend Workflow
-
-The dashboard is implemented in `index.html`.
-
-The page contains:
-
-``` text
-Dashboard
-│
-├── Flash Messages
-│
-├── Header
-│
-├── Filter Expenses
-│   ├── Start Date
-│   ├── End Date
-│   ├── Category
-│   ├── Apply
-│   ├── Reset
-│   └── Total
-│
-├── Export CSV
-│
-├── Add Expense
-│   ├── Description
-│   ├── Amount
-│   ├── Date
-│   ├── Category
-│   └── Add Expense
-│
-├── Expense Table
-│   ├── Date
-│   ├── Description
-│   ├── Category
-│   ├── Amount
-│   └── Delete
-│
-└── Visualizations
-    ├── Expenses by Category
-    └── Spending Over Time
-```
-
-The page uses Tailwind CSS for styling and Chart.js for charts.
-
-## 13. Data Flow
-
-### Add Expense
-
-``` text
-HTML Form
-   ↓
-POST /add
-   ↓
-Flask
-   ↓
-Validation
-   ↓
-Expense Model
-   ↓
-SQLAlchemy
-   ↓
-SQLite
-   ↓
-Redirect /
-   ↓
-Updated Dashboard
-```
-
-### Filter Expenses
-
-``` text
-Filter Form
-   ↓
-GET /
-   ↓
-Read query parameters
-   ↓
-Parse dates
-   ↓
-Build SQLAlchemy query
-   ↓
-Filter SQLite records
-   ↓
-Calculate total
-   ↓
-Calculate chart data
-   ↓
-Render index.html
-```
-
-### Export CSV
-
-``` text
-Export CSV
-   ↓
-GET /export_csv
-   ↓
-Read current filters
-   ↓
-Query filtered expenses
-   ↓
-Generate CSV in memory
-   ↓
-HTTP Response
-   ↓
-Browser downloads CSV
-```
-
-## 14. Error Handling
-
-The application uses Flask flash messages to communicate operation
-results to the user.
-
-Examples:
-
-``` text
-Success:
-"Expense added"
-"Expense deleted"
-
-Error:
-"Please fill description, amount, and category"
-"Amount must be a positive number"
-"Invalid date. Using today's date."
-"End date cannot be before start"
-```
-
-The frontend displays these messages with different visual styles for
-success and error states.
-
-## 15. Installation and Setup
+## 8. Local Setup and Execution
 
 ### Prerequisites
 
--   Python 3.x
--   pip
--   Git
+- Python 3.11 or a compatible Python version.
+- Git.
+- Docker Desktop, if using Docker.
 
-### Clone the Repository
+### Step 1: Clone the Repository
 
-``` bash
-git clone https://github.com/YOUR_USERNAME/expense-tracker.git
-cd expense-tracker
+```bash
+git clone https://github.com/GreeshmaReddy427/Personal-Expense-Tracker-DevOps.git
+cd Personal-Expense-Tracker-DevOps
 ```
 
-### Create a Virtual Environment
+### Step 2: Create a Virtual Environment
 
-Windows:
+For Windows PowerShell:
 
-``` powershell
-python -m venv venv
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-### Activate the Environment
+### Step 3: Install Dependencies
 
-Windows PowerShell:
-
-``` powershell
-.\venv\Scripts\activate
+```bash
+python -m pip install -r requirements.txt
 ```
 
-### Install Dependencies
+### Step 4: Run the Application Locally
 
-``` bash
-pip install -r requirements.txt
-```
-
-### Run the Application
-
-``` bash
+```bash
 python app.py
 ```
 
-Open the local application in your browser at:
+Open the following address in your browser:
 
-``` text
-http://127.0.0.1:5000/
+```text
+http://127.0.0.1:5000
 ```
 
-## 16. Git and Virtual Environment
+### Step 5: Run Automated Tests
 
-The virtual environment is intentionally excluded from version control.
+Install pytest if it is not already available:
 
-Instead of uploading:
-
-``` text
-venv/
+```bash
+python -m pip install pytest
 ```
 
-the project uploads:
+Execute the tests:
 
-``` text
-requirements.txt
+```bash
+python -m pytest -v
 ```
 
-Another developer can recreate the environment with:
+### Step 6: Build the Docker Image
 
-``` bash
-python -m venv venv
-pip install -r requirements.txt
+```bash
+docker build -t expense-tracker .
 ```
 
-This keeps the GitHub repository small and portable.
+### Step 7: Run the Docker Container
 
-## 17. Database Notes
-
-The application uses SQLite for local persistence.
-
-The database is created through:
-
-``` text
-db.create_all()
+```bash
+docker run -d --name expense-tracker-app -p 5000:5000 -v expense_data:/app/instance expense-tracker
 ```
 
-The application can therefore create the required database table when it
-starts.
+Access the application at:
 
-The local database file should generally not be committed when it
-contains personal or test data.
-
-## 18. Technologies Demonstrated
-
-This project demonstrates practical use of:
-
--   Python
--   Flask
--   Flask routing
--   HTTP GET and POST requests
--   Jinja2 templating
--   Flask-SQLAlchemy
--   SQLAlchemy ORM
--   SQLite
--   CRUD operations
--   Form handling
--   Server-side validation
--   Query filtering
--   Database aggregation
--   CSV generation
--   HTTP file downloads
--   JavaScript
--   Tailwind CSS
--   Chart.js
--   Git and GitHub
--   Python virtual environments
--   Dependency management with `requirements.txt`
-
-## 19. Future Improvements
-
-Possible improvements for future versions include:
-
--   User authentication and separate expense data per user
--   Edit/update expense functionality
--   Pagination for large expense lists
--   Monthly and yearly spending summaries
--   Budget tracking and budget alerts
--   Recurring expenses
--   More advanced reports
--   Downloadable PDF reports
--   Improved server-side security configuration
--   CSRF protection for POST forms
--   Environment variables for configuration and secrets
--   Production deployment with a production WSGI server
--   Automated tests
--   Database migrations using Flask-Migrate
-
-## 20. Project Learning Outcome
-
-This project demonstrates how a Python backend can be connected to a
-database and a web interface to build a complete CRUD application.
-
-The overall concept is:
-
-``` text
-Frontend
-   ↓
-HTTP Request
-   ↓
-Flask Route
-   ↓
-Validation / Business Logic
-   ↓
-SQLAlchemy ORM
-   ↓
-SQLite Database
-   ↓
-Query / Aggregation
-   ↓
-Flask Response
-   ↓
-Jinja2 + JavaScript
-   ↓
-Dashboard
+```text
+http://localhost:5000
 ```
 
-The project therefore combines backend development, database management,
-frontend rendering, data visualization, and file export into one
-complete web application.
+To stop the container:
 
+```bash
+docker stop expense-tracker-app
+```
 
-## Deployment Verification
-Automated deployment to Render verified.
+To start the existing container again:
+
+```bash
+docker start expense-tracker-app
+```
+
+The named Docker volume stores local container data separately from the container's writable filesystem. It is not shared with Render.
+
+## 9. Deployment Verification
+
+The following checks were completed during implementation:
+
+- The application ran successfully in a local Docker container.
+- The homepage smoke test passed through GitHub Actions.
+- The CI workflow successfully built the Docker image.
+- The application was deployed successfully on Render.
+- A subsequent GitHub push triggered Render Auto-Deploy.
+- The deployment reached the live state, and the hosted application was accessible.
+
+These checks demonstrate the implemented workflow from source control through automated verification and cloud deployment.
+
+## 10. Limitations
+
+- The automated test suite currently contains a basic homepage smoke test.
+- Render's free web services use an ephemeral filesystem.
+- SQLite data stored on Render is not guaranteed to persist across restarts, redeployments, or service spin-downs.
+- Free web services may spin down after periods of inactivity, delaying the first subsequent request.
+- The GitHub Actions workflow builds the Docker image but does not publish it to a container registry.
+- The CI workflow does not directly deploy the application to Render.
+- The project is intended for educational purposes and is not configured as a production-grade financial service.
+
+For reliable cloud data persistence, the application would need to be configured with an appropriate persistent database and database connection settings.
+
+## 11. Future Enhancements
+
+- Extend automated tests to cover expense creation, deletion, and filtering.
+- Configure a persistent managed database for cloud deployment.
+- Improve environment-based configuration and secret management.
+- Integrate container image vulnerability scanning.
+- Publish Docker images to a container registry.
+- Add health checks and application monitoring.
+- Expand CI/CD automation and deployment verification.
+
+## 12. Conclusion
+
+The Personal Expense Tracker with Automated Deployment demonstrates the practical application of DevOps principles to a Flask web application.
+
+The project integrates Git and GitHub for version control, Docker for containerization, pytest for automated testing, GitHub Actions for Continuous Integration, and Render for cloud deployment.
+
+The implementation provides a foundation for understanding how application code can be tested, packaged, and deployed through a repeatable workflow.
+
+## 13. Acknowledgements
+
+The original Expense Tracker application was referenced from:
+
+https://github.com/LokeshGopal2104/expense-tracker
+
+DevOps configuration, automated testing, CI workflow, and cloud deployment were added as part of this project.
